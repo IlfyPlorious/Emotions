@@ -1,10 +1,6 @@
-import matplotlib.pyplot as plt
 import torch
-import torchvision.transforms
 
-from torchvision.transforms import Lambda
-
-import DataSets
+from data import base_dataset
 
 train_features, train_labels = next(iter(DataSets.train_dataloader))
 
