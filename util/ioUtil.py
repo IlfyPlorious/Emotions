@@ -8,7 +8,7 @@ import torchaudio.functional as F
 import torchaudio.transforms as T
 from IPython.display import Audio, display
 
-import AudioFileModel
+from util import AudioFileModel
 
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 crema_d_dir = os.path.join(parent_dir, 'CREMA-D')
