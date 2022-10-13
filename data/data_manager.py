@@ -6,23 +6,31 @@ from data.base_dataset import SpectrogramsDataset
 
 
 class DataManager:
-    """config argument is a dictionary that contains
-    {
-        spectrogram_dir: path_to_spectograms_dir
-        batch_size: size of the batch
-        device: cuda if gpu else cpu
-        transform: transformation for data
-        transform_target: transformation for labels
-        train_size: number of train samples
-        valid_size: number of validation samples
-        test_size: number of test samples
-    }"""
+    """Manager class for data loaders.
 
-    def __init__(self, config):
+Config argument is a dictionary that contains the following:
+
+spectrogram_dir -> path_to_spectograms_dir
+
+batch_size -> size of the batch
+
+device -> cuda if gpu else cpu
+
+train_size -> number of train samples
+
+valid_size -> number of validation samples
+
+test_size -> number of test samples
+
+"""
+
+    def __init__(self, config, transform=None, transform_target=None):
         self.config = config
+        self.transform = transform
+        self.transform_target = transform_target
 
     def get_dataloader(self):
-        dataset = SpectrogramsDataset(self.config['spectrogram_dir'])
+        dataset = SpectrogramsDataset(self.config['spectrogram_dir'], self.transform, self.transform_target)
 
         dataloader = torch.utils.data.DataLoader(
             dataset,
@@ -35,9 +43,7 @@ class DataManager:
     def get_train_eval_dataloaders(self):
         np.random.seed(707)
 
-        transform = self.config['transform']
-        transform_target = self.config['transform_target']
-        dataset = SpectrogramsDataset(self.config['spectrogram_dir'])
+        dataset = SpectrogramsDataset(self.config['spectrogram_dir'], self.transform, self.transform_target)
         dataset_size = len(dataset)
 
         ## SPLIT DATASET
@@ -70,7 +76,7 @@ class DataManager:
     def get_train_eval_test_dataloaders(self):
         np.random.seed(707)
 
-        dataset = SpectrogramsDataset(self.config)
+        dataset = SpectrogramsDataset(self.config, self.transform, self.transform_target)
         dataset_size = len(dataset)
 
         ## SPLIT DATASET
