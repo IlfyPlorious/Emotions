@@ -24,6 +24,9 @@ class SpectrogramsDataset(Dataset):
             label = self.target_transform(label)
 
         # image is initially [channels, width, height], but plt.imshow() needs [width, height, channels]
-        image = torch.permute(image, [1, 2, 0])
+        # image = torch.permute(image, [1, 2, 0])
+
+        image
+        label
 
         return image, label
