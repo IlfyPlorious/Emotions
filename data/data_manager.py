@@ -1,8 +1,10 @@
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
+from torchvision.transforms import Lambda
 
 from data.base_dataset import SpectrogramsDataset
+from util import ioUtil
 
 
 class DataManager:
@@ -24,10 +26,17 @@ test_size -> number of test samples
 
 """
 
-    def __init__(self, config, transform=None, transform_target=None):
+    def __init__(self, config):
         self.config = config
-        self.transform = transform
-        self.transform_target = transform_target
+        self.transform = Lambda(lambda tensor: tensor.div(255))
+        self.transform_target = Lambda(lambda label:
+                                       torch.zeros(len(ioUtil.labels.values()),
+                                                   dtype=torch.float)
+                                       .scatter_(dim=0,
+                                                 index=torch.tensor(
+                                                     ioUtil.labels.get(
+                                                         label)),
+                                                 value=1))
 
     def get_dataloader(self):
         dataset = SpectrogramsDataset(self.config['spectrogram_dir'], self.transform, self.transform_target)
