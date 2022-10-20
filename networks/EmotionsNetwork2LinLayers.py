@@ -1,16 +1,16 @@
 from torch import nn
 
 
-class EmotionsNetwork(nn.Module):
+class EmotionsNetwork2LinLayers(nn.Module):
     def __init__(self):
-        super(EmotionsNetwork, self).__init__()
+        super(EmotionsNetwork2LinLayers, self).__init__()
         self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(369 * 496 * 4, 256),
+            nn.Linear(369 * 496 * 4, 128),
             nn.ReLU(),
-            nn.Linear(256, 64),
+            nn.Linear(128, 100),
             nn.ReLU(),
-            nn.Linear(64, 6)
+            nn.Linear(100, 6)
         )
 
     def forward(self, x):

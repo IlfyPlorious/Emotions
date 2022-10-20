@@ -65,7 +65,7 @@ def plot_waveform(waveform, sample_rate, title="Waveform", xlim=None, ylim=None)
     plt.show()
 
 
-def plot_specgram(waveform, sample_rate, title="Spectrogram", save_dir=None, xlim=None):
+def plot_specgram(waveform, sample_rate, title="Spectrogram", save_dir=None, file_name=None, xlim=None):
     waveform = waveform.numpy()
 
     num_channels, num_frames = waveform.shape
@@ -80,9 +80,10 @@ def plot_specgram(waveform, sample_rate, title="Spectrogram", save_dir=None, xli
             axes[c].set_ylabel(f'Channel {c + 1}')
         if xlim:
             axes[c].set_xlim(xlim)
-    if save_dir:
+    if save_dir and file_name:
         plt.axis('off')
-        plt.savefig(save_dir, bbox_inches='tight', transparent=True, pad_inches=0)
+        file_path = os.path.join(save_dir, file_name)
+        plt.savefig(file_path, bbox_inches='tight', transparent=True, pad_inches=0)
         plt.close()
     else:
         figure.suptitle(title)
@@ -169,3 +170,13 @@ def get_emotion_by_notation(notation):
         return "SAD"
     else:
         return "NEUTRAL"
+
+
+def save_spectrograms_to_dir(spectrograms_count=500, dir_name='Spectrograms'):
+    for file in get_wav_files(spectrograms_count):
+        save_dir = os.path.join(parent_dir, dir_name)
+        file_name = f"{file.actor}_{file.sample}_{file.emotion}_{file.emotion_level}"
+        print(f'Saving {file_name}...')
+        plot_specgram(waveform=file.waveform_data, sample_rate=file.sample_rate, save_dir=save_dir,
+                      file_name=file_name)
+        print(f'File {file_name} saved in {save_dir}')

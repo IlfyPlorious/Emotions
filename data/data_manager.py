@@ -18,11 +18,9 @@ batch_size -> size of the batch
 
 device -> cuda if gpu else cpu
 
-train_size -> number of train samples
+train_split -> division part for train size = dataset // train_split
 
-valid_size -> number of validation samples
-
-test_size -> number of test samples
+valid_split -> division part for validation size = dataset // valid_split
 
 """
 
@@ -56,8 +54,8 @@ test_size -> number of test samples
         dataset_size = len(dataset)
 
         ## SPLIT DATASET
-        train_split = self.config['train_size']
-        train_size = int(train_split * dataset_size)
+        train_split = self.config['train_split']
+        train_size = dataset_size // train_split
         validation_size = dataset_size - train_size
 
         indices = list(range(dataset_size))
@@ -89,13 +87,11 @@ test_size -> number of test samples
         dataset_size = len(dataset)
 
         ## SPLIT DATASET
-        train_split = self.config['train_size']
-        valid_split = self.config['valid_size']
-        test_split = self.config['test_size']
+        train_split = self.config['train_split']
+        valid_split = self.config['valid_split']
 
-        train_size = int(train_split * dataset_size)
-        valid_size = int(valid_split * dataset_size)
-        test_size = dataset_size - train_size - valid_size
+        train_size = dataset_size // train_split
+        valid_size = dataset_size // valid_split
 
         indices = list(range(dataset_size))
         np.random.shuffle(indices)
