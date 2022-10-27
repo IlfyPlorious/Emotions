@@ -16,6 +16,8 @@ spectrogram_dir -> path_to_spectograms_dir
 
 batch_size -> size of the batch
 
+train_epochs -> epochs count
+
 device -> cuda if gpu else cpu
 
 train_split -> division part for train size = dataset // train_split
@@ -37,7 +39,7 @@ valid_split -> division part for validation size = dataset // valid_split
                                                  value=1))
 
     def get_dataloader(self):
-        dataset = SpectrogramsDataset(self.config['spectrogram_dir'], self.transform, self.transform_target)
+        dataset = SpectrogramsDataset(self.config, self.transform, self.transform_target)
 
         dataloader = torch.utils.data.DataLoader(
             dataset,
@@ -50,7 +52,7 @@ valid_split -> division part for validation size = dataset // valid_split
     def get_train_eval_dataloaders(self):
         np.random.seed(707)
 
-        dataset = SpectrogramsDataset(self.config['spectrogram_dir'], self.transform, self.transform_target)
+        dataset = SpectrogramsDataset(self.config, self.transform, self.transform_target)
         dataset_size = len(dataset)
 
         ## SPLIT DATASET

@@ -15,8 +15,9 @@ class SpectrogramsDataset(Dataset):
         return len(os.listdir(self.img_dir))
 
     def __getitem__(self, idx):
-        img_path = os.path.join(self.img_dir, os.listdir(self.img_dir)[idx])
-        label = img_path.split('_')[2]
+        file_name = os.listdir(self.img_dir)[idx]
+        img_path = os.path.join(self.img_dir, file_name)
+        label = file_name.split('_')[2]
         image = read_image(img_path)
         if self.transform:
             image = self.transform(image)

@@ -7,6 +7,7 @@ import torchaudio
 import torchaudio.functional as F
 import torchaudio.transforms as T
 from IPython.display import Audio, display
+from torchvision.io import read_image
 
 from util import AudioFileModel
 
@@ -65,9 +66,9 @@ def plot_waveform(waveform, sample_rate, title="Waveform", xlim=None, ylim=None)
     plt.show()
 
 
-def plot_specgram(waveform, sample_rate, title="Spectrogram", save_dir=None, file_name=None, xlim=None):
-    waveform = waveform.numpy()
-
+def plot_specgram(file, title="Spectrogram", save_dir=None, xlim=None):
+    waveform = file.waveform_data.numpy()
+    sample_rate = file.sample_rate
     num_channels, num_frames = waveform.shape
     time_axis = torch.arange(0, num_frames) / sample_rate
 
@@ -80,9 +81,9 @@ def plot_specgram(waveform, sample_rate, title="Spectrogram", save_dir=None, fil
             axes[c].set_ylabel(f'Channel {c + 1}')
         if xlim:
             axes[c].set_xlim(xlim)
-    if save_dir and file_name:
+    if save_dir:
         plt.axis('off')
-        file_path = os.path.join(save_dir, file_name)
+        file_path = os.path.join(save_dir, file.get_file_name())
         plt.savefig(file_path, bbox_inches='tight', transparent=True, pad_inches=0)
         plt.close()
     else:
@@ -101,6 +102,16 @@ def play_audio(waveform, sample_rate):
     else:
         raise ValueError("Waveform with more than 2 channels are not supported.")
 
+
+def read_image_from_file(img_dir, file):
+    img_path = os.path.join(img_dir, file.get_file_name())
+    label = file.get_file_name().split('_')[2]
+    image = read_image(img_path)
+
+    # image is initially [channels, width, height], but plt.imshow() needs [width, height, channels]
+    # image = torch.permute(image, [1, 2, 0])
+
+    return image, label
 
 def get_spectrogram_from_waveform(waveform):
     n_fft = 1024
