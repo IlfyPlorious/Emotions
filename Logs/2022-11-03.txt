@@ -1,0 +1,31 @@
+
+
+Running new training session...
+Logs from 2022-11-03
+
+Epoch 1
+-------------------------------
+
+
+Running new training session...
+Logs from 2022-11-03
+
+Epoch 1
+-------------------------------
+loss: 1.788644  [    0/ 5073]
+
+
+Running new training session...
+Logs from 2022-11-03
+
+Epoch 1
+-------------------------------
+
+
+Running new training session...
+Logs from 2022-11-03
+
+Epoch 1
+-------------------------------
+loss: 1.793581  [    0/ 5073]
+loss: 1.787448  [   70/ 5073]

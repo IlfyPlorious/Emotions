@@ -16,7 +16,7 @@ class Trainer:
         self.optimizer = optimizer
         self.best_metric = 0.0
         self.loss_fn = loss_fn
-        self.log_file = open(os.path.join(config['save_file_path'], str(date.today()) + '.txt'), 'a')
+        self.log_file = open(os.path.join(config['save_file_path'], str(date.today()) + '.txt'), 'a+')
         self.epoch_loss_data = []
 
     def train_loop(self):
@@ -97,7 +97,7 @@ class Trainer:
             print(f"Epoch {t + 1}\n-------------------------------")
             self.log_file.write(f"Epoch {t + 1}\n-------------------------------\n")
             self.train_loop()
-            self.save_net_state(epoch=t + 1, latest=True)
+            self.save_net_state(epoch=t + 1)
             accuracy, loss = self.test_loop()
             self.epoch_loss_data.append(loss)
 
