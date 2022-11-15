@@ -1,7 +1,9 @@
 import os
 from os.path import join
 
+import librosa
 import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torchaudio
 import torchaudio.functional as F
@@ -113,7 +115,20 @@ def read_image_from_file(img_dir, file):
 
     return image, label
 
-def get_spectrogram_from_waveform(waveform):
+
+def plot_spectrogram(spec, title=None, ylabel="freq_bin", aspect="auto", xmax=None):
+    fig, axs = plt.subplots(1, 1)
+    axs.set_title(title or "Spectrogram (db)")
+    axs.set_ylabel(ylabel)
+    axs.set_xlabel("frame")
+    im = axs.imshow(spec, origin="lower", aspect=aspect)
+    if xmax:
+        axs.set_xlim((0, xmax))
+    fig.colorbar(im, ax=axs)
+    plt.show()
+
+
+def get_spectrogram_from_waveform_in_db(waveform, stretched=False):
     n_fft = 1024
     win_length = None
     hop_length = 512
@@ -128,9 +143,36 @@ def get_spectrogram_from_waveform(waveform):
         power=2.0,
     )
     # Perform transformation
-    return spectrogram(waveform)
+    if stretched:
+        final_spectrogram = stretch_spectrogram(spectrogram(waveform), n_freq=n_fft // 2 + 1, hop_length=hop_length)
+    else:
+        final_spectrogram = spectrogram(waveform)
+
+    return librosa.power_to_db(final_spectrogram)
 
     # Spectrogram size will be 513 on x_axis
+
+
+def stretch_spectrogram(spectrogram, index=1, final_dim=100, n_freq=201, hop_length=None):
+    stretch = T.TimeStretch(n_freq=n_freq, hop_length=hop_length)
+    rate = len(spectrogram[0][index]) / final_dim
+    stretched_spectrogram = stretch(spectrogram, rate)
+    if stretched_spectrogram.shape[2] != 100:
+        rate = len(stretched_spectrogram[0][index]) / final_dim
+        stretched_spectrogram = stretch(stretched_spectrogram, rate)
+
+    return stretched_spectrogram
+
+
+def save_spectrogram_data(file, save_dir='SpectrogramData'):
+    spectrogram = get_spectrogram_from_waveform_in_db(file.waveform_data, stretched=True)
+    actor_dir = os.path.join(save_dir, file.actor)
+    saved_file_name = os.path.join(actor_dir, file.get_file_name())
+
+    if not os.path.exists(actor_dir):
+        os.makedirs(actor_dir)
+
+    np.save(saved_file_name, spectrogram)
 
 
 def get_waveform_from_spectrogram(spectrogram):

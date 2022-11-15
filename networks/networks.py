@@ -53,9 +53,9 @@ class EmotionsNetworkV3(nn.Module):
     def __init__(self):
         super(EmotionsNetworkV3, self).__init__()
         # 4 channels because spectrogram tensors shape is [4, 369, 496] which has 4 channels
-        self.conv1 = nn.Conv2d(4, 8, 30)
-        self.conv2 = nn.Conv2d(8, 16, 30)
-        self.fc1 = nn.Linear(4 * 8 * 16, 128)
+        self.conv1 = nn.Conv2d(1, 8, 10)
+        self.conv2 = nn.Conv2d(8, 16, 10)
+        self.fc1 = nn.Linear(192, 128)
         self.fc2 = nn.Linear(128, 64)
         self.fc3 = nn.Linear(64, 6)
 
