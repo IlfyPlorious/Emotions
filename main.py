@@ -1,43 +1,33 @@
+import json
 import os
 
-import matplotlib.pyplot as plt
-import torch
-from torchvision.transforms import Lambda
+import librosa
+import numpy as np
+import torchaudio.transforms
+from matplotlib import pyplot as plt
+from torch import nn
+from torch.utils.data import DataLoader
 
-from data.data_manager import DataManager
+import data.data_manager
+import torch
+
+import networks.networks
+from data import base_dataset
+from trainer import Trainer
 from util import ioUtil
 
-config = {
-    'spectrogram_dir': os.path.join(ioUtil.parent_dir, 'Spectrograms'),
+config = json.load(open('config.json'))
 
-    'batch_size': 30,
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using {device} device")
 
-    'device': 'cuda',
+model = networks.networks.EmotionsNetworkV3().to(device)
+train_dataloader, eval_dataloader = data.data_manager.DataManager(config).get_train_eval_dataloaders()
+optimizer = torch.optim.SGD(model.parameters(), lr=config['learning_rate'])
 
-    'train_size': 10,
+trainer = Trainer(model=model, train_dataloader=train_dataloader, eval_dataloader=eval_dataloader,
+                  loss_fn=nn.CrossEntropyLoss(), criterion=None, optimizer=optimizer, config=config)
 
-    'valid_size': 10,
+trainer.run()
 
-    'test_size': 10
-}
 
-transform = Lambda(lambda tensor: tensor.div(255)),
-target_transform = Lambda(lambda label:
-                          torch.zeros(len(ioUtil.labels.values()),
-                                      dtype=torch.float)
-                          .scatter_(dim=0,
-                                    index=torch.tensor(
-                                        ioUtil.labels.get(
-                                            label)),
-                                    value=1))
-
-train_loader, validation_loader, test_loader = DataManager(config=config).get_train_eval_test_dataloaders()
-
-train_features, train_labels = next(iter(train_loader))
-print(f"Feature batch shape: {train_features}")
-print(f"Labels batch shape: {train_labels}")
-img = train_features[0].squeeze()
-label = train_labels[0]
-plt.imshow(img, cmap="gray")
-plt.show()
-print(f"Label: {label}")

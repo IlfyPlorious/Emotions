@@ -17,6 +17,9 @@ class AudioFile:
         except BaseException:
             return 1
 
+    def get_file_name(self):
+        return f'{self.actor}_{self.sample}_{self.emotion}_{self.emotion_level}'
+
     def __str__(self) -> str:
         return f'Sample: {self.sample}, actor: {self.actor}, emotion: {self.emotion},\n' \
                f' metadata:{self.metadata}, length:{self.get_length_in_seconds()}'

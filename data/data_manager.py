@@ -1,8 +1,10 @@
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
+from torchvision.transforms import Lambda
 
 from data.base_dataset import SpectrogramsDataset
+from util import ioUtil
 
 
 class DataManager:
@@ -14,23 +16,30 @@ spectrogram_dir -> path_to_spectograms_dir
 
 batch_size -> size of the batch
 
+train_epochs -> epochs count
+
 device -> cuda if gpu else cpu
 
-train_size -> number of train samples
+train_split -> division part for train size = dataset // train_split
 
-valid_size -> number of validation samples
-
-test_size -> number of test samples
+valid_split -> division part for validation size = dataset // valid_split
 
 """
 
-    def __init__(self, config, transform=None, transform_target=None):
+    def __init__(self, config):
         self.config = config
-        self.transform = transform
-        self.transform_target = transform_target
+        self.transform = Lambda(lambda tensor: tensor.div(255))
+        self.transform_target = Lambda(lambda label:
+                                       torch.zeros(len(ioUtil.labels.values()),
+                                                   dtype=torch.float)
+                                       .scatter_(dim=0,
+                                                 index=torch.tensor(
+                                                     ioUtil.labels.get(
+                                                         label)),
+                                                 value=1))
 
     def get_dataloader(self):
-        dataset = SpectrogramsDataset(self.config['spectrogram_dir'], self.transform, self.transform_target)
+        dataset = SpectrogramsDataset(self.config, self.transform, self.transform_target)
 
         dataloader = torch.utils.data.DataLoader(
             dataset,
@@ -43,12 +52,12 @@ test_size -> number of test samples
     def get_train_eval_dataloaders(self):
         np.random.seed(707)
 
-        dataset = SpectrogramsDataset(self.config['spectrogram_dir'], self.transform, self.transform_target)
+        dataset = SpectrogramsDataset(self.config, self.transform, self.transform_target)
         dataset_size = len(dataset)
 
         ## SPLIT DATASET
-        train_split = self.config['train_size']
-        train_size = int(train_split * dataset_size)
+        train_split = self.config['train_split']
+        train_size = dataset_size // train_split
         validation_size = dataset_size - train_size
 
         indices = list(range(dataset_size))
@@ -80,13 +89,11 @@ test_size -> number of test samples
         dataset_size = len(dataset)
 
         ## SPLIT DATASET
-        train_split = self.config['train_size']
-        valid_split = self.config['valid_size']
-        test_split = self.config['test_size']
+        train_split = self.config['train_split']
+        valid_split = self.config['valid_split']
 
-        train_size = int(train_split * dataset_size)
-        valid_size = int(valid_split * dataset_size)
-        test_size = dataset_size - train_size - valid_size
+        train_size = dataset_size // train_split
+        valid_size = dataset_size // valid_split
 
         indices = list(range(dataset_size))
         np.random.shuffle(indices)
