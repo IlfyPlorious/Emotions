@@ -97,7 +97,7 @@ class Trainer:
             print(f"Epoch {t + 1}\n-------------------------------")
             self.log_file.write(f"Epoch {t + 1}\n-------------------------------\n")
             self.train_loop()
-            self.save_net_state(epoch=t + 1)
+            self.save_net_state(epoch=t + 1, latest=True)
             accuracy, loss = self.test_loop()
             self.epoch_loss_data.append(loss)
 
