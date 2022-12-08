@@ -233,3 +233,9 @@ def save_spectrograms_to_dir(spectrograms_count=500, dir_name='Spectrograms'):
         plot_specgram(waveform=file.waveform_data, sample_rate=file.sample_rate, save_dir=save_dir,
                       file_name=file_name)
         print(f'File {file_name} saved in {save_dir}')
+
+
+def map_tensor_to_0_1(tensor):
+    minimum = torch.min(tensor)
+    maximum = torch.max(tensor)
+    return torch.div(tensor - minimum, maximum - minimum)

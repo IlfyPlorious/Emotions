@@ -7,7 +7,7 @@ from data.base_dataset import SpectrogramsDataset
 from util import ioUtil
 
 
-class DataManager:
+class DataManagerSpectrograms:
     """Manager class for data loaders.
 
 Config argument is a dictionary that contains the following:
@@ -25,10 +25,9 @@ train_split -> division part for train size = dataset // train_split
 valid_split -> division part for validation size = dataset // valid_split
 
 """
-
     def __init__(self, config):
         self.config = config
-        self.transform = Lambda(lambda tensor: tensor.div(255))
+        self.transform = Lambda(lambda tensor: ioUtil.map_tensor_to_0_1(tensor))
         self.transform_target = Lambda(lambda label:
                                        torch.zeros(len(ioUtil.labels.values()),
                                                    dtype=torch.float)

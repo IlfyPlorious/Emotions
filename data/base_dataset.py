@@ -3,7 +3,6 @@ import os.path
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-from torchvision.io import read_image
 
 
 class SpectrogramsDataset(Dataset):
@@ -15,7 +14,7 @@ class SpectrogramsDataset(Dataset):
     def __len__(self):
         length = 0
         for dir in os.listdir(self.img_dir):
-            for spectrogram in os.listdir(os.path.join(self.img_dir, dir)):
+            for _ in os.listdir(os.path.join(self.img_dir, dir)):
                 length += 1
         return length
 
@@ -43,3 +42,10 @@ class SpectrogramsDataset(Dataset):
         # image = torch.permute(image, [1, 2, 0])
 
         return image, label
+
+
+class VideosDataset(Dataset):
+    def __init__(self, config, transform=None, transform_target=None):
+        self.transform = transform
+        self.transform_target = transform_target
+        self.img_dir = config['video_dir']
