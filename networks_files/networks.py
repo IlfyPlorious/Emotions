@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch import Tensor
 from torch import nn
 
-from networks import res_net
+from networks_files import res_net
 
 
 class EmotionsNetwork2LinLayers(nn.Module):

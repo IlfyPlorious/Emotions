@@ -12,8 +12,8 @@ from torch.utils.data import DataLoader
 import data.data_manager
 import torch
 
-import networks.networks
-import networks.res_net as res_net
+import networks_files.networks
+import networks_files.res_net as res_net
 import util.VideoFileModel
 from data import base_dataset
 from trainer import Trainer
@@ -24,7 +24,7 @@ config = json.load(open('config.json'))
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 
-model = networks.networks.ResNet(block=res_net.BasicBlock, layers=[1, 1, 1, 1], num_classes=6).to(device)
+model = networks_files.networks.ResNet(block=res_net.BasicBlock, layers=[1, 1, 1, 1], num_classes=6).to(device)
 train_dataloader, eval_dataloader = data.data_manager.DataManagerSpectrograms(config).get_train_eval_dataloaders()
 optimizer = torch.optim.SGD(model.parameters(), lr=config['learning_rate'])
 
